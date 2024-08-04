@@ -183,13 +183,14 @@ function select_channel(
     end
 end
 
+using OrderedCollections
 "Execute a query, flattening blocks into a single dict of column arrays."
 function select(
     sock::ClickHouseSock,
     query::AbstractString;
     kwargs...
-)::Dict{Symbol, Any}
-    result = Dict{Symbol, Any}()
+)::OrderedDict{Symbol, Any}
+    result = OrderedDict{Symbol, Any}()
     select_callback(sock, query; kwargs...) do block
         for (col_name, col_data) ∈ block
             arr = get(result, col_name, nothing)
@@ -209,7 +210,7 @@ function select_df(
     query::AbstractString;
     kwargs...
 )::DataFrame
-    select(sock, query; kwargs...) |> pairs |> DataFrame
+    select(sock, query; kwargs...) |> DataFrame
 end
 
 # ============================================================================ #
